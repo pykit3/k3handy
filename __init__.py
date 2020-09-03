@@ -41,7 +41,7 @@ def ddstack(*msg):
             if line is None:
                 line = ''
             else:
-                line = line[0].rstrip()
+                line = line[0].strip()
             logger.debug("stack: %d %s %s", ln, func, line, **ddstack_kwarg)
 
 
