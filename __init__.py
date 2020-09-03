@@ -25,7 +25,9 @@ def dd(*msg):
     """
     Alias to logger.debug()
     """
-    logger.debug(str(msg), **ddstack_kwarg)
+    msg = [str(x) for x in msg]
+    msg = ' '.join(msg)
+    logger.debug(msg, **ddstack_kwarg)
 
 
 def ddstack(*msg):

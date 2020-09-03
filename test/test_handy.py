@@ -20,7 +20,7 @@ k3handy.dd("123");
             'python', '-c',
             script.format(level="DEBUG")
         )
-        self.assertEqual("DEBUG:k3handy:('123',)", got)
+        self.assertEqual("DEBUG:k3handy:123", got)
 
         got = k3handy.cmd0(
             'python', '-c',
