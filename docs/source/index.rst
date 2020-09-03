@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-this-package
+k3handy
 ==========
 
-.. automodule:: this-package
+.. automodule:: k3handy
 
 .. toctree::
    :maxdepth: 2
@@ -23,17 +23,23 @@ Exceptions
 ----------
 
 .. autoexception::  CalledProcessError
-.. autoexception::  ProcError
 .. autoexception::  TimeoutExpired
 
 
-Functions
----------
+Sub process
+-----------
 
-.. autofunction::  command
-.. autofunction::  command_ex
-.. autofunction::  shell_script
-.. autofunction::  start_process
+.. autofunction::  cmd0
+.. autofunction::  cmdout
+.. autofunction::  cmdpass
+.. autofunction::  cmdtty
+.. autofunction::  cmdx
+
+Logging
+-----------
+
+.. autofunction::  dd
+.. autofunction::  ddstack
 
 Indices and tables
 ==================

@@ -1,29 +1,106 @@
 """
-package-name is utility to create sub process.
-
-Execute a shell script::
-
-    import pk3proc
-
-    # execute a shell script
-
-    returncode, out, err = pk3proc.shell_script('ls / | grep bin')
-    print returncode
-    print out
-    # output:
-    # > 0
-    # > bin
-    # > sbin
-
-Run a command::
-
-    # Unlike the above snippet, following statement does not start an sh process.
-    returncode, out, err = pk3proc.command('ls', 'a*', cwd='/usr/local')
-
+k3handy is collection of mostly used  utilities.
 """
 
-# from .proc import CalledProcessError
-# from .proc import ProcError
+__version__ = "0.1.0"
+__name__ = "k3handy"
 
-__version__ = "0.2.2"
-__name__ = "k3proc"
+import logging
+import inspect
+
+
+from k3proc import command
+from k3proc import CalledProcessError
+from k3proc import TimeoutExpired
+
+logger = logging.getLogger(__name__)
+
+def dd(*msg):
+    """
+    Alias to logger.debug()
+    """
+    logger.debug(str(msg), stacklevel=2)
+
+
+def ddstack(*msg):
+    """
+    Log calling stack in logging.DEBUG level.
+    """
+
+    if logger.level == logging.DEBUG:
+
+        stack = inspect.stack()[1:]
+        for i, (frame, path, ln, func, line, xx) in enumerate(stack):
+            logger.debug("stack: %d %s %s", ln, func, line[0].rstrip(), stacklevel=2)
+
+
+def cmd0(cmd, *arguments, **options):
+    """
+    Alias to k3proc.command() with ``check=True``
+
+    Returns:
+        str: first line of stdout.
+    """
+    dd("cmd0:", cmd, arguments, options)
+    _, out, _ = cmdx(cmd, *arguments, **options)
+    dd("cmd0: out:", out)
+    return out[0]
+
+
+def cmdout(cmd, *arguments, **options):
+    """
+    Alias to k3proc.command() with ``check=True``.
+
+    Returns:
+        list: stdout in lines of str.
+    """
+
+    dd("cmdout:", cmd, arguments, options)
+    _, out, _ = cmdx(cmd, *arguments, **options)
+    dd("cmdout: out:", out)
+    return out
+
+
+def cmdx(cmd, *arguments, **options):
+    """
+    Alias to k3proc.command() with ``check=True``.
+
+    Returns:
+        (int, list, list): exit code, stdout and stderr in lines of str.
+    """
+    dd("cmdx:", cmd, arguments, options)
+    ddstack()
+
+    options['check'] = True
+    code, out, err = command(cmd, *arguments, **options)
+    out = out.splitlines()
+    err = err.splitlines()
+    return code, out, err
+
+
+def cmdtty(cmd, *arguments, **options):
+    """
+    Alias to k3proc.command() with ``check=True`` ``tty=True``.
+    As if the command is run in a tty.
+
+    Returns:
+        (int, list, list): exit code, stdout and stderr in lines of str.
+    """
+
+    dd("cmdtty:", cmd, arguments, options)
+    options['tty'] = True
+    return cmdx(cmd, *arguments, **options)
+
+
+def cmdpass(cmd, *arguments, **options):
+    """
+    Alias to k3proc.command() with ``check=True`` ``capture=False``.
+    It just passes stdout and stderr to calling process.
+
+    Returns:
+        (int, list, list): exit code and empty stdout and stderr.
+    """
+    # interactive mode, delegate stdin to sub proc
+    dd("cmdpass:", cmd, arguments, options)
+    options['capture'] = False
+    return cmdx(cmd, *arguments, **options)
