@@ -27,11 +27,16 @@ def ddstack(*msg):
     Log calling stack in logging.DEBUG level.
     """
 
-    if logger.level == logging.DEBUG:
+    if logger.isEnabledFor(logging.DEBUG):
 
         stack = inspect.stack()[1:]
         for i, (frame, path, ln, func, line, xx) in enumerate(stack):
-            logger.debug("stack: %d %s %s", ln, func, line[0].rstrip(), stacklevel=2)
+            #  python -c "xxx" does not have a line
+            if line is None:
+                line = ''
+            else:
+                line = line[0].rstrip()
+            logger.debug("stack: %d %s %s", ln, func, line, stacklevel=2)
 
 
 def cmd0(cmd, *arguments, **options):
@@ -44,7 +49,9 @@ def cmd0(cmd, *arguments, **options):
     dd("cmd0:", cmd, arguments, options)
     _, out, _ = cmdx(cmd, *arguments, **options)
     dd("cmd0: out:", out)
-    return out[0]
+    if len(out) > 0:
+        return out[0]
+    return ''
 
 
 def cmdout(cmd, *arguments, **options):

@@ -11,45 +11,66 @@ this_base = os.path.dirname(__file__)
 
 class TestHandyLogging(unittest.TestCase):
 
-    foo_fn = '/tmp/foo'
+    def test_dd(self):
+        script = '''
+import sys;
+import logging;
+import k3handy;
+logging.basicConfig(stream=sys.stdout, level=logging.{level});
+k3handy.dd("123");
+'''
+        got = k3handy.cmd0(
+            'python', '-c',
+            script.format(level="DEBUG")
+        )
+        self.assertEqual("DEBUG:k3handy:('123',)", got)
 
-    def _clean(self):
+        got = k3handy.cmd0(
+            'python', '-c',
+            script.format(level="INFO")
+        )
+        self.assertEqual("", got)
 
-        # remove written file
-        try:
-            os.unlink(self.foo_fn)
-        except EnvironmentError:
-            pass
+    def test_ddstack(self):
+        script = '''
+import sys;
+import logging;
+import k3handy;
+logging.basicConfig(stream=sys.stdout, level=logging.{level});
+def foo(): k3handy.ddstack("123");
+foo()
+'''
+        got = k3handy.cmdout(
+            'python', '-c',
+            script.format(level="DEBUG")
+        )
+        self.assertEqual([
+                "DEBUG:k3handy:stack: 6 foo ", 
+                "DEBUG:k3handy:stack: 7 <module> ", 
+        ], got)
 
-    def setUp(self):
-        self._clean()
-
-    def tearDown(self):
-        self._clean()
+        got = k3handy.cmdout(
+            'python', '-c',
+            script.format(level="INFO")
+        )
+        self.assertEqual([], got)
 
 class TestHandyCmd(unittest.TestCase):
-
-    foo_fn = '/tmp/foo'
-
-    def _clean(self):
-
-        # remove written file
-        try:
-            os.unlink(self.foo_fn)
-        except EnvironmentError:
-            pass
-
-    def setUp(self):
-        self._clean()
-
-    def tearDown(self):
-        self._clean()
 
     def test_cmd0(self):
         got = k3handy.cmd0(
             'python', '-c', 'print("a"); print("b")',
         )
         self.assertEqual('a', got)
+
+        #  no output
+
+        got = k3handy.cmd0(
+            'python', '-c', '',
+        )
+        self.assertEqual('', got)
+
+        #  failure to exception
 
         self.assertRaises(k3handy.CalledProcessError,
                           k3handy.cmd0,
