@@ -5,6 +5,7 @@ k3handy is collection of mostly used  utilities.
 __version__ = "0.1.0"
 __name__ = "k3handy"
 
+import sys
 import logging
 import inspect
 
@@ -15,11 +16,16 @@ from k3proc import TimeoutExpired
 
 logger = logging.getLogger(__name__)
 
+#  Since 3.8 there is a stacklevel argument
+ddstack_kwarg = {}
+if sys.version_info.major == 3 and sys.version_info.minor >= 8:
+    ddstack_kwarg = {"stacklevel": 2}
+
 def dd(*msg):
     """
     Alias to logger.debug()
     """
-    logger.debug(str(msg), stacklevel=2)
+    logger.debug(str(msg), **ddstack_kwarg)
 
 
 def ddstack(*msg):
@@ -36,7 +42,7 @@ def ddstack(*msg):
                 line = ''
             else:
                 line = line[0].rstrip()
-            logger.debug("stack: %d %s %s", ln, func, line, stacklevel=2)
+            logger.debug("stack: %d %s %s", ln, func, line, **ddstack_kwarg)
 
 
 def cmd0(cmd, *arguments, **options):

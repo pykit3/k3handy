@@ -6,9 +6,6 @@ import k3handy
 
 dd = k3ut.dd
 
-this_base = os.path.dirname(__file__)
-
-
 class TestHandyLogging(unittest.TestCase):
 
     def test_dd(self):
