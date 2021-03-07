@@ -2,7 +2,7 @@
 k3handy is collection of mostly used  utilities.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __name__ = "k3handy"
 
 import os
