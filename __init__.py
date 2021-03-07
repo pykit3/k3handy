@@ -23,6 +23,7 @@ ddstack_kwarg = {}
 if sys.version_info.major == 3 and sys.version_info.minor >= 8:
     ddstack_kwarg = {"stacklevel": 2}
 
+
 def dd(*msg):
     """
     Alias to logger.debug()
@@ -48,6 +49,7 @@ def ddstack(*msg):
                 line = line[0].strip()
             logger.debug("stack: %d %s %s", ln, func, line, **ddstack_kwarg)
 
+
 def cmdf(cmd, *arguments, flag='', **options):
     """
     Alias to k3proc.command(). Behaviors is specified with ``flag``
@@ -57,14 +59,14 @@ def cmdf(cmd, *arguments, flag='', **options):
 
         arguments: arguments
 
-        flag(str): str flags.
+        flag(str or list or tuple): str flags.
 
-            - 'x': raise CalledProcessError if return code is not 0
-            - 't': start sub process in a tty.
-            - 'n': if return code is not 0, return None.
-            - 'p': do not capture stdin, stdout and stderr.
-            - 'o': only return stdout in list of str.
-            - '0': only return the first line of stdout.
+            - 'x' or ('raise', ): raise CalledProcessError if return code is not 0
+            - 't' or ('tty', ): start sub process in a tty.
+            - 'n' or ('none', ): if return code is not 0, return None.
+            - 'p' or ('pass', ): do not capture stdin, stdout and stderr.
+            - 'o' or ('stdout', ): only return stdout in list of str.
+            - '0' or ('oneline', ): only return the first line of stdout.
 
         options: other options pass to k3proc.command().
 
@@ -73,34 +75,45 @@ def cmdf(cmd, *arguments, flag='', **options):
     """
     dd("cmdf:", cmd, arguments, options)
     dd("flag:", flag)
+    mp = {
+        'x': 'raise',
+        't': 'tty',
+        'n': 'none',
+        'p': 'pass',
+        'o': 'stdout',
+        '0': 'oneline',
+    }
+    if isinstance(flag, str):
+        flag = [mp[x] for x in flag]
 
-    if 'x' in flag:
+    if 'raise' in flag:
         options['check'] = True
-    if 't' in flag:
+    if 'tty' in flag:
         options['tty'] = True
-    if 'p' in flag:
+    if 'pass' in flag:
         options['capture'] = False
 
     code, out, err = command(cmd, *arguments, **options)
 
     # reaching here means there is no check of exception
-    if code != 0 and 'n' in flag:
+    if code != 0 and 'none' in flag:
         return None
 
     out = out.splitlines()
     err = err.splitlines()
 
-    if 'o' in flag:
+    if 'stdout' in flag:
         dd("cmdf: out:", out)
         return out
 
-    if '0' in flag:
+    if 'oneline' in flag:
         dd("cmdf: out:", out)
         if len(out) > 0:
             return out[0]
         return ''
 
     return code, out, err
+
 
 def cmd0(cmd, *arguments, **options):
     """
@@ -175,6 +188,7 @@ def cmdpass(cmd, *arguments, **options):
     options['capture'] = False
     return cmdx(cmd, *arguments, **options)
 
+
 def display(stdout, stderr=None):
     """
     Output to stdout and stderr.
@@ -205,7 +219,6 @@ def display(stdout, stderr=None):
 
     if stderr is not None:
         display(2, stderr)
-
 
 
 def pjoin(*args):
