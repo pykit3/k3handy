@@ -32,8 +32,9 @@ class TestHandyCmd(unittest.TestCase):
                 flag=f,
             )
 
+        # return None if error
+
         for f in ('n0', ['none', 'oneline']):
-            # return None if error
             got = k3handy.cmdf(
                 'python', '-c',
                 'import sys; sys.exit(5)',
@@ -41,8 +42,9 @@ class TestHandyCmd(unittest.TestCase):
             )
             self.assertEqual(None, got)
 
+        #  raise with 'x'
+
         for f in ('x0', ['raise', 'oneline']):
-            #  raise with 'x'
             self.assertRaises(k3handy.CalledProcessError,
                               k3handy.cmdf,
                               'python', '-c',
@@ -50,8 +52,14 @@ class TestHandyCmd(unittest.TestCase):
                               flag=f,
                               )
 
+        self.assertRaises(k3handy.CalledProcessError,
+                          k3handy.cmdx,
+                          'python', '-c',
+                          'import sys; sys.exit(5)',
+                          )
+
+        # out
         for f in ('o', ['stdout']):
-            # out
 
             got = k3handy.cmdf(
                 'python', '-c', 'print("a"); print("b")',
@@ -67,9 +75,9 @@ class TestHandyCmd(unittest.TestCase):
                               flag=f,
                               )
 
-        for f in ('t', ['tty']):
-            # tty
+        # tty
 
+        for f in ('t', ['tty']):
             returncode, out, err = k3handy.cmdf(
                 'python', '-c', 'import sys; print(sys.stdout.isatty())',
                 flag=f,
@@ -77,6 +85,14 @@ class TestHandyCmd(unittest.TestCase):
 
             dd('out:', out)
             self.assertEqual(['True'], out)
+
+        returncode, out, err = k3handy.cmdtty(
+            'python', '-c', 'import sys; print(sys.stdout.isatty())',
+        )
+        dd('out:', out)
+        self.assertEqual(['True'], out)
+
+        # input
 
         read_stdin_in_subproc = '''
 import k3handy;
