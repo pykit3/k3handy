@@ -20,7 +20,9 @@ k3handy.dd("123");
             'python', '-c',
             script.format(level="DEBUG")
         )
-        self.assertEqual("DEBUG:k3handy.cmd:123", got)
+        # 3.8.6 does not output ".cmd"
+        # 3.8.10 does    output ".cmd"
+        self.assertRegex(got, r"DEBUG:k3handy(\.cmd)?:123")
 
         got = k3handy.cmd0(
             'python', '-c',
@@ -41,10 +43,11 @@ foo()
             'python', '-c',
             script.format(level="DEBUG")
         )
-        self.assertEqual([
-            "DEBUG:k3handy.cmd:stack: 6 foo ",
-            "DEBUG:k3handy.cmd:stack: 7 <module> ",
-        ], got)
+
+        # 3.8.6 does not output ".cmd"
+        # 3.8.10 does    output ".cmd"
+        self.assertRegex(got[0], r"DEBUG:k3handy(\.cmd)?:stack: 6 foo ")
+        self.assertRegex(got[1], r"DEBUG:k3handy(\.cmd)?:stack: 7 <module> ")
 
         got = k3handy.cmdout(
             'python', '-c',
