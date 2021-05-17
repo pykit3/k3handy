@@ -14,7 +14,7 @@ setuptools.setup(
     keywords=['handy', 'shortcut'],
     python_requires='>=3.0',
 
-    install_requires=['semantic_version~=2.8.5', 'jinja2~=2.11.2', 'PyYAML~=5.3.1', 'sphinx~=3.3.1', 'k3ut~=0.1.7', 'k3proc~=0.2.5', 'k3str~=0.1.1'],
+    install_requires=['semantic_version~=2.8.5', 'jinja2~=2.11.2', 'PyYAML~=5.3.1', 'sphinx>=3.3.1,<4.1.0', 'k3ut~=0.1.7', 'k3proc~=0.2.5', 'k3str~=0.1.1'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
