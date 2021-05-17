@@ -8,6 +8,26 @@ dd = k3ut.dd
 
 class TestHandyCmd(unittest.TestCase):
 
+    def test_parse_flag(self):
+        cases = [
+            ('', ()),
+            ('x', ('raise', )),
+            ('t', ('tty',)),
+            ('n', ('none',)),
+            ('p', ('pass',)),
+            ('o', ('stdout',)),
+            ('0', ('oneline',)),
+            ('x0', ('raise', 'oneline',)),
+        ]
+
+        for c in cases:
+            flag, want = c
+            got = k3handy.parse_flag(flag)
+            self.assertEqual(want, got)
+
+        with self.assertRaises(KeyError):
+            k3handy.parse_flag('q')
+
     def test_cmdf(self):
 
         for f in ('0', ('oneline', )):

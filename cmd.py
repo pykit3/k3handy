@@ -63,16 +63,7 @@ def cmdf(cmd, *arguments, flag='', **options):
     """
     dd("cmdf:", cmd, arguments, options)
     dd("flag:", flag)
-    mp = {
-        'x': 'raise',
-        't': 'tty',
-        'n': 'none',
-        'p': 'pass',
-        'o': 'stdout',
-        '0': 'oneline',
-    }
-    if isinstance(flag, str):
-        flag = [mp[x] for x in flag]
+    flag = parse_flag(flag)
 
     if 'raise' in flag:
         options['check'] = True
@@ -175,3 +166,23 @@ def cmdpass(cmd, *arguments, **options):
     dd("cmdpass:", cmd, arguments, options)
     options['capture'] = False
     return cmdx(cmd, *arguments, **options)
+
+
+def parse_flag(flag=''):
+    """
+    Convert short form flag into tuple form, e.g.:
+    'x0' is converted to ('raise', 'oneline')
+    """
+
+    mp = {
+        'x': 'raise',
+        't': 'tty',
+        'n': 'none',
+        'p': 'pass',
+        'o': 'stdout',
+        '0': 'oneline',
+    }
+    if isinstance(flag, str):
+        flag = [mp[x] for x in flag]
+
+    return tuple(flag)

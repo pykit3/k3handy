@@ -27,6 +27,7 @@ from .cmd import cmdout
 from .cmd import cmdpass
 from .cmd import cmdtty
 from .cmd import cmdx
+from .cmd import parse_flag
 
 from .cmd import dd
 from .cmd import ddstack
