@@ -14,7 +14,7 @@ setuptools.setup(
     keywords=['handy', 'shortcut'],
     python_requires='>=3.0',
 
-    install_requires=['k3ut<0.2,>=0.1.15', 'k3proc>=0.2.13,<0.3', 'k3str<0.2,>=0.1.4'],
+    install_requires=['k3ut<0.2,>=0.1.15', 'k3proc<0.3,>=0.2.13', 'k3str>=0.1.4,<0.2'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
