@@ -1,6 +1,7 @@
 -r _building/requirements.txt
 
 
-k3ut>=0.1.15,<0.2
+k3fs>=0.1.5,<0.2
 k3proc>=0.2.13,<0.3
 k3str>=0.1.4,<0.2
+k3ut>=0.1.15,<0.2

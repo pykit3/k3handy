@@ -2,7 +2,7 @@
 k3handy is collection of mostly used  utilities.
 """
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 __name__ = "k3handy"
 
 import os
@@ -12,6 +12,12 @@ import inspect
 
 from . import path
 
+from k3fs import fread
+from k3fs import fwrite
+from k3fs import ls_dirs
+from k3fs import ls_files
+from k3fs import makedirs
+from k3fs import remove
 from k3proc import command
 from k3proc import CalledProcessError
 from k3proc import TimeoutExpired
