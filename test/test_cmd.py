@@ -10,19 +10,25 @@ class TestHandyCmd(unittest.TestCase):
 
     def test_parse_flag(self):
         cases = [
-            ('', ()),
-            ('x', ('raise', )),
-            ('t', ('tty',)),
-            ('n', ('none',)),
-            ('p', ('pass',)),
-            ('o', ('stdout',)),
-            ('0', ('oneline',)),
-            ('x0', ('raise', 'oneline',)),
+            ([''],                             ()),
+            (['x'],                            ('raise', )),
+            (['t'],                            ('tty',)),
+            (['n'],                            ('none',)),
+            (['p'],                            ('pass',)),
+            (['o'],                            ('stdout',)),
+            (['0'],                            ('oneline',)),
+            (['x0'],                           ('raise', 'oneline',)),
+            (['x0-x'],                         ('oneline',)),
+            (['x0-xx'],                        ('oneline', 'raise', )),
+            (['x0', '-xx'],                    ('oneline', 'raise', )),
+            (['x0', ''],                       ('raise', 'oneline', )),
+            (['x0', ['-oneline']],             ('raise', )),
+            ([('raise', 'oneline', '-raise')], ('oneline', )),
         ]
 
         for c in cases:
-            flag, want = c
-            got = k3handy.parse_flag(flag)
+            flags, want = c
+            got = k3handy.parse_flag(*flags)
             self.assertEqual(want, got)
 
         with self.assertRaises(KeyError):

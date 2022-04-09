@@ -168,11 +168,46 @@ def cmdpass(cmd, *arguments, **options):
     return cmdx(cmd, *arguments, **options)
 
 
-def parse_flag(flag=''):
+def parse_flag(*flags):
     """
     Convert short form flag into tuple form, e.g.:
-    'x0' is converted to ('raise', 'oneline')
+    parse_flag('x0') output: ('raise', 'oneline')
+
+    '-x' will remove flag 'x'.
+    parse_flag('x0-x') output ('online', )
+
+    parse_flag(['raise', 'oneline', '-raise']) outputs ('oneline', )
+
+    parse_flag(['raise', 'oneline', '-raise'], 't') outputs ('oneline', 'tty', )
+
     """
+
+    expanded = []
+    for flag in flags:
+        f = expand_flag(flag)
+        expanded.extend(f)
+
+    #  reduce
+
+    res = {}
+    for key in expanded:
+        if key.startswith('-'):
+            key = key[1:]
+            if key in res:
+                del res[key]
+        else:
+            res[key] = True
+
+    flag = tuple(res.keys())
+
+    return flag
+
+
+def expand_flag(flag):
+
+    # expand abbreviations:
+    # x  ->  raise
+    # -x -> -raise
 
     mp = {
         'x': 'raise',
@@ -182,7 +217,21 @@ def parse_flag(flag=''):
         'o': 'stdout',
         '0': 'oneline',
     }
-    if isinstance(flag, str):
-        flag = [mp[x] for x in flag]
 
-    return tuple(flag)
+    if isinstance(flag, str):
+        res =  []
+        buf = ''
+
+        for c in flag:
+            if c == '-':
+                buf += c
+                continue
+            else:
+                key = buf + mp[c]
+                buf = ''
+
+                res.append(key)
+
+        flag = tuple(res)
+    return flag
+
