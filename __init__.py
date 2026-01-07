@@ -2,13 +2,13 @@
 k3handy is collection of mostly used  utilities.
 """
 
-__version__ = "0.1.7"
-__name__ = "k3handy"
+from importlib.metadata import version
+
+__version__ = version("k3handy")
 
 import os
 import sys
 import logging
-import inspect
 
 from . import path
 
@@ -39,6 +39,39 @@ from .cmd import dd
 from .cmd import ddstack
 
 
+__all__ = [
+    # from k3fs
+    "fread",
+    "fwrite",
+    "ls_dirs",
+    "ls_files",
+    "makedirs",
+    "remove",
+    # from k3proc
+    "command",
+    "CalledProcessError",
+    "TimeoutExpired",
+    # from k3str
+    "to_bytes",
+    # from .path
+    "path",
+    "pabs",
+    "pjoin",
+    "prebase",
+    # from .cmd
+    "cmd0",
+    "cmdf",
+    "cmdout",
+    "cmdpass",
+    "cmdtty",
+    "cmdx",
+    "parse_flag",
+    "dd",
+    "ddstack",
+    # local
+    "display",
+]
+
 logger = logging.getLogger(__name__)
 
 #  Since 3.8 there is a stacklevel argument
@@ -64,8 +97,8 @@ def display(stdout, stderr=None):
 
         if isinstance(line, (list, tuple)):
             lines = line
-            for l in lines:
-                display(fd, l)
+            for ln in lines:
+                display(fd, ln)
             return
 
         os.write(fd, to_bytes(line))

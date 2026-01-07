@@ -7,7 +7,6 @@ dd = k3ut.dd
 
 
 class TestHandyFs(unittest.TestCase):
-
     def test_found(self):
         _ = [
             k3handy.fread,

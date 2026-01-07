@@ -17,7 +17,7 @@ def dd(*msg):
     Alias to logger.debug()
     """
     msg = [str(x) for x in msg]
-    msg = ' '.join(msg)
+    msg = " ".join(msg)
     logger.debug(msg, **ddstack_kwarg)
 
 
@@ -27,18 +27,17 @@ def ddstack(*msg):
     """
 
     if logger.isEnabledFor(logging.DEBUG):
-
         stack = inspect.stack()[1:]
         for i, (frame, path, ln, func, line, xx) in enumerate(stack):
             #  python -c "xxx" does not have a line
             if line is None:
-                line = ''
+                line = ""
             else:
                 line = line[0].strip()
             logger.debug("stack: %d %s %s", ln, func, line, **ddstack_kwarg)
 
 
-def cmdf(cmd, *arguments, flag='', **options):
+def cmdf(cmd, *arguments, flag="", **options):
     """
     Alias to k3proc.command(). Behaviors is specified with ``flag``
 
@@ -65,31 +64,31 @@ def cmdf(cmd, *arguments, flag='', **options):
     dd("flag:", flag)
     flag = parse_flag(flag)
 
-    if 'raise' in flag:
-        options['check'] = True
-    if 'tty' in flag:
-        options['tty'] = True
-    if 'pass' in flag:
-        options['capture'] = False
+    if "raise" in flag:
+        options["check"] = True
+    if "tty" in flag:
+        options["tty"] = True
+    if "pass" in flag:
+        options["capture"] = False
 
     code, out, err = command(cmd, *arguments, **options)
 
     # reaching here means there is no check of exception
-    if code != 0 and 'none' in flag:
+    if code != 0 and "none" in flag:
         return None
 
     out = out.splitlines()
     err = err.splitlines()
 
-    if 'stdout' in flag:
+    if "stdout" in flag:
         dd("cmdf: out:", out)
         return out
 
-    if 'oneline' in flag:
+    if "oneline" in flag:
         dd("cmdf: out:", out)
         if len(out) > 0:
             return out[0]
-        return ''
+        return ""
 
     return code, out, err
 
@@ -106,7 +105,7 @@ def cmd0(cmd, *arguments, **options):
     dd("cmd0: out:", out)
     if len(out) > 0:
         return out[0]
-    return ''
+    return ""
 
 
 def cmdout(cmd, *arguments, **options):
@@ -133,7 +132,7 @@ def cmdx(cmd, *arguments, **options):
     dd("cmdx:", cmd, arguments, options)
     ddstack()
 
-    options['check'] = True
+    options["check"] = True
     code, out, err = command(cmd, *arguments, **options)
     out = out.splitlines()
     err = err.splitlines()
@@ -150,7 +149,7 @@ def cmdtty(cmd, *arguments, **options):
     """
 
     dd("cmdtty:", cmd, arguments, options)
-    options['tty'] = True
+    options["tty"] = True
     return cmdx(cmd, *arguments, **options)
 
 
@@ -164,7 +163,7 @@ def cmdpass(cmd, *arguments, **options):
     """
     # interactive mode, delegate stdin to sub proc
     dd("cmdpass:", cmd, arguments, options)
-    options['capture'] = False
+    options["capture"] = False
     return cmdx(cmd, *arguments, **options)
 
 
@@ -191,7 +190,7 @@ def parse_flag(*flags):
 
     res = {}
     for key in expanded:
-        if key.startswith('-'):
+        if key.startswith("-"):
             key = key[1:]
             if key in res:
                 del res[key]
@@ -204,34 +203,32 @@ def parse_flag(*flags):
 
 
 def expand_flag(flag):
-
     # expand abbreviations:
     # x  ->  raise
     # -x -> -raise
 
     mp = {
-        'x': 'raise',
-        't': 'tty',
-        'n': 'none',
-        'p': 'pass',
-        'o': 'stdout',
-        '0': 'oneline',
+        "x": "raise",
+        "t": "tty",
+        "n": "none",
+        "p": "pass",
+        "o": "stdout",
+        "0": "oneline",
     }
 
     if isinstance(flag, str):
-        res =  []
-        buf = ''
+        res = []
+        buf = ""
 
         for c in flag:
-            if c == '-':
+            if c == "-":
                 buf += c
                 continue
             else:
                 key = buf + mp[c]
-                buf = ''
+                buf = ""
 
                 res.append(key)
 
         flag = tuple(res)
     return flag
-

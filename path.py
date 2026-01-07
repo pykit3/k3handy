@@ -32,7 +32,7 @@ def pabs(*args):
 
 
 def prebase(base, *pseg):
-    '''
+    """
     Rebaase path pseg on to base and returns the absolute path.
 
     >>> prebase("/a", "b")
@@ -64,7 +64,7 @@ def prebase(base, *pseg):
 
     Returns:
         str: the path joined
-    '''
+    """
 
     for p in pseg:
         if p is None:
