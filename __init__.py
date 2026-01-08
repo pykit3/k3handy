@@ -1,14 +1,16 @@
 """
 k3handy is collection of mostly used  utilities.
 """
+from __future__ import annotations
+
+import logging
+import os
+import sys
+from typing import Sequence
 
 from importlib.metadata import version
 
 __version__ = version("k3handy")
-
-import os
-import sys
-import logging
 
 from . import path
 
@@ -75,12 +77,15 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 #  Since 3.8 there is a stacklevel argument
-ddstack_kwarg = {}
+ddstack_kwarg: dict[str, int] = {}
 if sys.version_info.major == 3 and sys.version_info.minor >= 8:
     ddstack_kwarg = {"stacklevel": 2}
 
 
-def display(stdout, stderr=None):
+def display(
+    stdout: int | str | Sequence[str] | None,
+    stderr: str | Sequence[str] | None = None,
+) -> None:
     """
     Output to stdout and stderr.
     - ``display(1, "foo")`` write to stdout.

@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import os
 
 
-def pjoin(*args):
+def pjoin(*args: str) -> str:
     """
     Alias to os.path.join()
 
@@ -15,7 +17,7 @@ def pjoin(*args):
     return os.path.join(*args)
 
 
-def pabs(*args):
+def pabs(*args: str) -> str:
     """
     Alias to os.path.abspath() and os.path.normpath()
 
@@ -31,7 +33,7 @@ def pabs(*args):
     return os.path.normpath(p)
 
 
-def prebase(base, *pseg):
+def prebase(base: str | None, *pseg: str | None) -> str | None:
     """
     Rebaase path pseg on to base and returns the absolute path.
 
