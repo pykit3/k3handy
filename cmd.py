@@ -130,9 +130,7 @@ def cmdout(cmd: str | Sequence[str], *arguments: str, **options: Any) -> list[st
     return out
 
 
-def cmdx(
-    cmd: str | Sequence[str], *arguments: str, **options: Any
-) -> tuple[int, list[str], list[str]]:
+def cmdx(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, list[str], list[str]]:
     """
     Alias to k3proc.command() with ``check=True``.
 
@@ -149,9 +147,7 @@ def cmdx(
     return code, out_lines, err_lines
 
 
-def cmdtty(
-    cmd: str | Sequence[str], *arguments: str, **options: Any
-) -> tuple[int, list[str], list[str]]:
+def cmdtty(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, list[str], list[str]]:
     """
     Alias to k3proc.command() with ``check=True`` ``tty=True``.
     As if the command is run in a tty.
@@ -165,9 +161,7 @@ def cmdtty(
     return cmdx(cmd, *arguments, **options)
 
 
-def cmdpass(
-    cmd: str | Sequence[str], *arguments: str, **options: Any
-) -> tuple[int, list[str], list[str]]:
+def cmdpass(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, list[str], list[str]]:
     """
     Alias to k3proc.command() with ``check=True`` ``capture=False``.
     It just passes stdout and stderr to calling process.

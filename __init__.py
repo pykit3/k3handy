@@ -1,6 +1,7 @@
 """
 k3handy is collection of mostly used  utilities.
 """
+
 from __future__ import annotations
 
 import logging
