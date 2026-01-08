@@ -16,9 +16,9 @@ logging.basicConfig(stream=sys.stdout, level=logging.{level});
 k3handy.dd("123");
 """
         got = k3handy.cmd0("python", "-c", script.format(level="DEBUG"))
-        # 3.8.6 does not output ".cmd"
-        # 3.8.10 does    output ".cmd"
-        self.assertRegex(got, r"DEBUG:k3handy(\.cmd)?:123")
+        # 3.8.6 does not output ".cmdutil"
+        # 3.8.10 does    output ".cmdutil"
+        self.assertRegex(got, r"DEBUG:k3handy(\.cmdutil)?:123")
 
         got = k3handy.cmd0("python", "-c", script.format(level="INFO"))
         self.assertEqual("", got)
@@ -34,10 +34,10 @@ foo()
 """
         got = k3handy.cmdout("python", "-c", script.format(level="DEBUG"))
 
-        # 3.8.6 does not output ".cmd"
-        # 3.8.10 does    output ".cmd"
-        self.assertRegex(got[0], r"DEBUG:k3handy(\.cmd)?:stack: 6 foo ")
-        self.assertRegex(got[1], r"DEBUG:k3handy(\.cmd)?:stack: 7 <module> ")
+        # 3.8.6 does not output ".cmdutil"
+        # 3.8.10 does    output ".cmdutil"
+        self.assertRegex(got[0], r"DEBUG:k3handy(\.cmdutil)?:stack: 6 foo ")
+        self.assertRegex(got[1], r"DEBUG:k3handy(\.cmdutil)?:stack: 7 <module> ")
 
         got = k3handy.cmdout("python", "-c", script.format(level="INFO"))
         self.assertEqual([], got)

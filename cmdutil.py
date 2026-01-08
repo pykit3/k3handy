@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import logging
 import sys
+import warnings
 from typing import Any, Sequence
 
 from k3proc import command
@@ -62,6 +63,10 @@ def cmdf(
             - 'p' or ('pass', ): do not capture stdin, stdout and stderr.
             - 'o' or ('stdout', ): only return stdout in list of str.
             - '0' or ('oneline', ): only return the first line of stdout.
+
+            .. deprecated::
+                Single-letter flags ('x', 't', 'n', 'p', 'o', '0') are deprecated.
+                Use full names instead.
 
         options: other options pass to k3proc.command().
 
@@ -187,6 +192,10 @@ def parse_flag(*flags: str | Sequence[str]) -> tuple[str, ...]:
 
     parse_flag(['raise', 'oneline', '-raise'], 't') outputs ('oneline', 'tty', )
 
+    .. deprecated::
+        Single-letter flags ('x', 't', 'n', 'p', 'o', '0') are deprecated.
+        Use full names ('raise', 'tty', 'none', 'pass', 'stdout', 'oneline') instead.
+
     """
 
     expanded: list[str] = []
@@ -233,7 +242,13 @@ def expand_flag(flag: str | Sequence[str]) -> tuple[str, ...] | Sequence[str]:
                 buf += c
                 continue
             else:
-                key = buf + mp[c]
+                full_name = mp[c]
+                warnings.warn(
+                    f"Single-letter flag '{c}' is deprecated, use '{full_name}' instead",
+                    DeprecationWarning,
+                    stacklevel=4,
+                )
+                key = buf + full_name
                 buf = ""
 
                 res.append(key)

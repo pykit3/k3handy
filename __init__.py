@@ -30,16 +30,16 @@ from .path import pabs
 from .path import pjoin
 from .path import prebase
 
-from .cmd import cmd0
-from .cmd import cmdf
-from .cmd import cmdout
-from .cmd import cmdpass
-from .cmd import cmdtty
-from .cmd import cmdx
-from .cmd import parse_flag
+from .cmdutil import cmd0
+from .cmdutil import cmdf
+from .cmdutil import cmdout
+from .cmdutil import cmdpass
+from .cmdutil import cmdtty
+from .cmdutil import cmdx
+from .cmdutil import parse_flag
 
-from .cmd import dd
-from .cmd import ddstack
+from .cmdutil import dd
+from .cmdutil import ddstack
 
 
 __all__ = [
