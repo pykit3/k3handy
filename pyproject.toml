@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "k3handy"
-version = "0.1.10"
+version = "0.1.11"
 description = "Handy alias of mostly used functions"
 readme = "README.md"
 license = {text = "MIT"}
