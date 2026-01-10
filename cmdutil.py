@@ -5,7 +5,7 @@ import logging
 import sys
 import warnings
 from enum import Enum
-from typing import Any, Sequence
+from typing import Any, Sequence, Union
 
 from k3proc import command
 
@@ -23,11 +23,12 @@ class CmdFlag(str, Enum):
         >>> cmdf("git", "status", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
         >>> cmdf("echo", "hi", flag=CMD_RAISE_ONELINE)
     """
-    RAISE = "raise"      # Raise CalledProcessError if return code != 0
-    TTY = "tty"          # Start subprocess in a tty
-    NONE = "none"        # Return None if return code != 0
-    PASS = "pass"        # Don't capture stdin/stdout/stderr
-    STDOUT = "stdout"    # Return stdout as list[str]
+
+    RAISE = "raise"  # Raise CalledProcessError if return code != 0
+    TTY = "tty"  # Start subprocess in a tty
+    NONE = "none"  # Return None if return code != 0
+    PASS = "pass"  # Don't capture stdin/stdout/stderr
+    STDOUT = "stdout"  # Return stdout as list[str]
     ONELINE = "oneline"  # Return first line of stdout
 
 
@@ -36,8 +37,8 @@ CMD_RAISE_STDOUT: list[str] = [CmdFlag.RAISE, CmdFlag.STDOUT]
 CMD_RAISE_ONELINE: list[str] = [CmdFlag.RAISE, CmdFlag.ONELINE]
 CMD_NONE_ONELINE: list[str] = [CmdFlag.NONE, CmdFlag.ONELINE]
 
-# Type alias for flag parameters
-CmdFlagType = str | CmdFlag | Sequence[str | CmdFlag]
+# Type alias for flag parameters  (using Union for Python 3.9 compatibility)
+CmdFlagType = Union[str, CmdFlag, Sequence[Union[str, CmdFlag]]]
 
 #  Since 3.8 there is a stacklevel argument
 ddstack_kwarg: dict[str, Any] = {}

@@ -93,9 +93,7 @@ class TestHandyCmd(unittest.TestCase):
 
     def test_enum_flags(self):
         # Test single enum flag
-        got = k3handy.cmdf(
-            "python", "-c", 'print("a"); print("b")', flag=k3handy.CmdFlag.ONELINE
-        )
+        got = k3handy.cmdf("python", "-c", 'print("a"); print("b")', flag=k3handy.CmdFlag.ONELINE)
         self.assertEqual("a", got)
 
         # Test list of enum flags
@@ -128,9 +126,7 @@ class TestHandyCmd(unittest.TestCase):
 
     def test_preset_combinations(self):
         # Test CMD_RAISE_ONELINE
-        got = k3handy.cmdf(
-            "python", "-c", 'print("a"); print("b")', flag=k3handy.CMD_RAISE_ONELINE
-        )
+        got = k3handy.cmdf("python", "-c", 'print("a"); print("b")', flag=k3handy.CMD_RAISE_ONELINE)
         self.assertEqual("a", got)
 
         # Test CMD_RAISE_STDOUT
