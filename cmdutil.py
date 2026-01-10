@@ -4,11 +4,40 @@ import inspect
 import logging
 import sys
 import warnings
+from enum import Enum
 from typing import Any, Sequence
 
 from k3proc import command
 
 logger = logging.getLogger(__name__)
+
+
+class CmdFlag(str, Enum):
+    """Command execution flags for cmdf() and related functions.
+
+    Flags control subprocess behavior and return value formatting.
+    Can be used individually or combined in lists.
+
+    Examples:
+        >>> cmdf("ls", flag=CmdFlag.RAISE)
+        >>> cmdf("git", "status", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
+        >>> cmdf("echo", "hi", flag=CMD_RAISE_ONELINE)
+    """
+    RAISE = "raise"      # Raise CalledProcessError if return code != 0
+    TTY = "tty"          # Start subprocess in a tty
+    NONE = "none"        # Return None if return code != 0
+    PASS = "pass"        # Don't capture stdin/stdout/stderr
+    STDOUT = "stdout"    # Return stdout as list[str]
+    ONELINE = "oneline"  # Return first line of stdout
+
+
+# Preset combinations for common usage patterns
+CMD_RAISE_STDOUT: list[str] = [CmdFlag.RAISE, CmdFlag.STDOUT]
+CMD_RAISE_ONELINE: list[str] = [CmdFlag.RAISE, CmdFlag.ONELINE]
+CMD_NONE_ONELINE: list[str] = [CmdFlag.NONE, CmdFlag.ONELINE]
+
+# Type alias for flag parameters
+CmdFlagType = str | CmdFlag | Sequence[str | CmdFlag]
 
 #  Since 3.8 there is a stacklevel argument
 ddstack_kwarg: dict[str, Any] = {}
@@ -44,34 +73,63 @@ def ddstack(*msg: Any) -> None:
 def cmdf(
     cmd: str | Sequence[str],
     *arguments: str,
-    flag: str | Sequence[str] = "",
+    flag: CmdFlagType = "",
     **options: Any,
 ) -> None | list[str] | str | tuple[int, list[str], list[str]]:
     """
-    Alias to k3proc.command(). Behaviors is specified with ``flag``
+    Alias to k3proc.command(). Behavior is specified with ``flag``
 
     Args:
-        cmd(str): the path to executable.
+        cmd: the path to executable
 
-        arguments: arguments
+        arguments: command arguments
 
-        flag(str or list or tuple): str flags.
+        flag: Execution flags (use CmdFlag enum recommended, strings also supported)
 
-            - 'x' or ('raise', ): raise CalledProcessError if return code is not 0
-            - 't' or ('tty', ): start sub process in a tty.
-            - 'n' or ('none', ): if return code is not 0, return None.
-            - 'p' or ('pass', ): do not capture stdin, stdout and stderr.
-            - 'o' or ('stdout', ): only return stdout in list of str.
-            - '0' or ('oneline', ): only return the first line of stdout.
+            Individual flags (use CmdFlag enum):
+                - CmdFlag.RAISE: raise CalledProcessError if return code != 0
+                - CmdFlag.TTY: start subprocess in a tty
+                - CmdFlag.NONE: return None if return code != 0
+                - CmdFlag.PASS: don't capture stdin/stdout/stderr
+                - CmdFlag.STDOUT: return stdout as list[str]
+                - CmdFlag.ONELINE: return first line of stdout
+
+            Preset combinations:
+                - CMD_RAISE_STDOUT: [CmdFlag.RAISE, CmdFlag.STDOUT]
+                - CMD_RAISE_ONELINE: [CmdFlag.RAISE, CmdFlag.ONELINE]
+                - CMD_NONE_ONELINE: [CmdFlag.NONE, CmdFlag.ONELINE]
+
+            String forms also supported: 'raise', 'tty', 'none', 'pass', 'stdout', 'oneline'
 
             .. deprecated::
-                Single-letter flags ('x', 't', 'n', 'p', 'o', '0') are deprecated.
-                Use full names instead.
+                Single-letter flags are deprecated, use CmdFlag enum or full names instead:
+                    - 'x' or ('raise',): raise CalledProcessError if return code != 0
+                    - 't' or ('tty',): start subprocess in a tty
+                    - 'n' or ('none',): return None if return code != 0
+                    - 'p' or ('pass',): don't capture stdin/stdout/stderr
+                    - 'o' or ('stdout',): return stdout as list[str]
+                    - '0' or ('oneline',): return first line of stdout
 
-        options: other options pass to k3proc.command().
+        options: other options passed to k3proc.command()
 
     Returns:
-        str: first line of stdout.
+        Varies based on flags:
+            - With ONELINE: str (first line of stdout)
+            - With STDOUT: list[str] (all stdout lines)
+            - With NONE: None if error, otherwise normal return
+            - Default: tuple[int, list[str], list[str]] (code, stdout, stderr)
+
+    Examples:
+        Using enum constants (recommended):
+
+        >>> cmdf("ls", "-la", flag=CmdFlag.RAISE)
+        >>> cmdf("git", "status", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
+        >>> branch = cmdf("git", "branch", "--show-current", flag=CMD_RAISE_ONELINE)
+
+        String forms (also supported):
+
+        >>> cmdf("ls", flag="raise")
+        >>> cmdf("ls", flag=["raise", "stdout"])
     """
     dd("cmdf:", cmd, arguments, options)
     dd("flag:", flag)
@@ -180,7 +238,7 @@ def cmdpass(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[
     return cmdx(cmd, *arguments, **options)
 
 
-def parse_flag(*flags: str | Sequence[str]) -> tuple[str, ...]:
+def parse_flag(*flags: str | CmdFlag | Sequence[str | CmdFlag]) -> tuple[str, ...]:
     """
     Convert short form flag into tuple form, e.g.:
     parse_flag('x0') output: ('raise', 'oneline')
@@ -219,10 +277,14 @@ def parse_flag(*flags: str | Sequence[str]) -> tuple[str, ...]:
     return result
 
 
-def expand_flag(flag: str | Sequence[str]) -> tuple[str, ...] | Sequence[str]:
+def expand_flag(flag: str | CmdFlag | Sequence[str | CmdFlag]) -> tuple[str, ...] | Sequence[str]:
     # expand abbreviations:
     # x  ->  raise
     # -x -> -raise
+
+    # Handle CmdFlag enum
+    if isinstance(flag, CmdFlag):
+        return (flag.value,)
 
     mp: dict[str, str] = {
         "x": "raise",

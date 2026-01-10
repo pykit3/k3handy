@@ -72,6 +72,113 @@ class TestHandyCmd(unittest.TestCase):
             got = k3handy.parse_flag(*flags)
             self.assertEqual(want, got)
 
+    def test_parse_flag_with_enum(self):
+        # Test CmdFlag enum
+        got = k3handy.parse_flag(k3handy.CmdFlag.RAISE)
+        self.assertEqual(("raise",), got)
+
+        got = k3handy.parse_flag(k3handy.CmdFlag.RAISE, k3handy.CmdFlag.ONELINE)
+        self.assertEqual(("raise", "oneline"), got)
+
+        # Test list of enums
+        got = k3handy.parse_flag([k3handy.CmdFlag.RAISE, k3handy.CmdFlag.STDOUT])
+        self.assertEqual(("raise", "stdout"), got)
+
+        # Test mixed string and enum
+        got = k3handy.parse_flag(["raise", k3handy.CmdFlag.STDOUT])
+        self.assertEqual(("raise", "stdout"), got)
+
+        got = k3handy.parse_flag([k3handy.CmdFlag.RAISE, "stdout"])
+        self.assertEqual(("raise", "stdout"), got)
+
+    def test_enum_flags(self):
+        # Test single enum flag
+        got = k3handy.cmdf(
+            "python", "-c", 'print("a"); print("b")', flag=k3handy.CmdFlag.ONELINE
+        )
+        self.assertEqual("a", got)
+
+        # Test list of enum flags
+        got = k3handy.cmdf(
+            "python",
+            "-c",
+            'print("a"); print("b")',
+            flag=[k3handy.CmdFlag.RAISE, k3handy.CmdFlag.STDOUT],
+        )
+        self.assertEqual(["a", "b"], got)
+
+        # Test enum flag with error handling
+        self.assertRaises(
+            k3handy.CalledProcessError,
+            k3handy.cmdf,
+            "python",
+            "-c",
+            "import sys; sys.exit(5)",
+            flag=[k3handy.CmdFlag.RAISE, k3handy.CmdFlag.ONELINE],
+        )
+
+        # Test NONE enum flag
+        got = k3handy.cmdf(
+            "python",
+            "-c",
+            "import sys; sys.exit(5)",
+            flag=[k3handy.CmdFlag.NONE, k3handy.CmdFlag.ONELINE],
+        )
+        self.assertEqual(None, got)
+
+    def test_preset_combinations(self):
+        # Test CMD_RAISE_ONELINE
+        got = k3handy.cmdf(
+            "python", "-c", 'print("a"); print("b")', flag=k3handy.CMD_RAISE_ONELINE
+        )
+        self.assertEqual("a", got)
+
+        # Test CMD_RAISE_STDOUT
+        got = k3handy.cmdf(
+            "python",
+            "-c",
+            'print("a"); print("b")',
+            flag=k3handy.CMD_RAISE_STDOUT,
+        )
+        self.assertEqual(["a", "b"], got)
+
+        # Test CMD_NONE_ONELINE with error
+        got = k3handy.cmdf(
+            "python",
+            "-c",
+            "import sys; sys.exit(5)",
+            flag=k3handy.CMD_NONE_ONELINE,
+        )
+        self.assertEqual(None, got)
+
+        # Test CMD_RAISE_STDOUT with error
+        self.assertRaises(
+            k3handy.CalledProcessError,
+            k3handy.cmdf,
+            "python",
+            "-c",
+            "import sys; sys.exit(5)",
+            flag=k3handy.CMD_RAISE_STDOUT,
+        )
+
+    def test_mixed_string_enum_usage(self):
+        # Mix string and enum in list
+        got = k3handy.cmdf(
+            "python",
+            "-c",
+            'print("a"); print("b")',
+            flag=["raise", k3handy.CmdFlag.STDOUT],
+        )
+        self.assertEqual(["a", "b"], got)
+
+        got = k3handy.cmdf(
+            "python",
+            "-c",
+            'print("a"); print("b")',
+            flag=[k3handy.CmdFlag.RAISE, "stdout"],
+        )
+        self.assertEqual(["a", "b"], got)
+
     def test_cmdf(self):
         got = k3handy.cmdf("python", "-c", 'print("a"); print("b")', flag=["oneline"])
         self.assertEqual("a", got)

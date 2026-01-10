@@ -30,6 +30,10 @@ from .path import pabs
 from .path import pjoin
 from .path import prebase
 
+from .cmdutil import CmdFlag
+from .cmdutil import CMD_RAISE_STDOUT
+from .cmdutil import CMD_RAISE_ONELINE
+from .cmdutil import CMD_NONE_ONELINE
 from .cmdutil import cmd0
 from .cmdutil import cmdf
 from .cmdutil import cmdout
@@ -62,6 +66,10 @@ __all__ = [
     "pjoin",
     "prebase",
     # from .cmd
+    "CmdFlag",
+    "CMD_RAISE_STDOUT",
+    "CMD_RAISE_ONELINE",
+    "CMD_NONE_ONELINE",
     "cmd0",
     "cmdf",
     "cmdout",
