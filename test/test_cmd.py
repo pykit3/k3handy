@@ -2,6 +2,7 @@ import unittest
 import warnings
 
 import k3ut
+
 import k3handy
 
 dd = k3ut.dd
@@ -237,7 +238,7 @@ class TestHandyCmd(unittest.TestCase):
         )
 
         # tty
-        returncode, out, err = k3handy.cmdf(
+        _returncode, out, _err = k3handy.cmdf(
             "python",
             "-c",
             "import sys; print(sys.stdout.isatty())",
@@ -247,7 +248,7 @@ class TestHandyCmd(unittest.TestCase):
         dd("out:", out)
         self.assertEqual(["True"], out)
 
-        returncode, out, err = k3handy.cmdtty(
+        _returncode, out, _err = k3handy.cmdtty(
             "python",
             "-c",
             "import sys; print(sys.stdout.isatty())",
@@ -264,7 +265,7 @@ flag=['pass']
 )
         """
 
-        returncode, out, err = k3handy.cmdx(
+        _returncode, out, _err = k3handy.cmdx(
             "python",
             "-c",
             read_stdin_in_subproc,

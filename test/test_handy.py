@@ -1,6 +1,7 @@
 import unittest
 
 import k3ut
+
 import k3handy
 
 dd = k3ut.dd
@@ -58,7 +59,7 @@ class TestHandyDisplay(unittest.TestCase):
             _, out, err = k3handy.cmdx(
                 "python",
                 "-c",
-                "import k3handy; k3handy.{}".format(cmd),
+                f"import k3handy; k3handy.{cmd}",
             )
 
             self.assertEqual(want, (out, err))

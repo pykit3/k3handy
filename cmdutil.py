@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import inspect
 import logging
-import sys
 import warnings
+from collections.abc import Sequence
 from enum import Enum
-from typing import Any, Sequence, Union
+from typing import Any, Union
 
 from k3proc import command
 
@@ -41,9 +41,7 @@ CMD_NONE_ONELINE: list[str] = [CmdFlag.NONE, CmdFlag.ONELINE]
 CmdFlagType = Union[str, CmdFlag, Sequence[Union[str, CmdFlag]]]
 
 #  Since 3.8 there is a stacklevel argument
-ddstack_kwarg: dict[str, Any] = {}
-if sys.version_info.major == 3 and sys.version_info.minor >= 8:
-    ddstack_kwarg = {"stacklevel": 2}
+ddstack_kwarg: dict[str, Any] = {"stacklevel": 2}
 
 
 def dd(*msg: Any) -> None:
@@ -268,8 +266,7 @@ def parse_flag(*flags: str | CmdFlag | Sequence[str | CmdFlag]) -> tuple[str, ..
     for key in expanded:
         if key.startswith("-"):
             key = key[1:]
-            if key in res:
-                del res[key]
+            res.pop(key, None)
         else:
             res[key] = True
 

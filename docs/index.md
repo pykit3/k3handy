@@ -20,14 +20,14 @@ pip install k3handy
 from k3handy import fread, fwrite, cmdx, dd
 
 # File operations
-fwrite('/tmp/hello.txt', 'Hello World')
-content = fread('/tmp/hello.txt')
+fwrite("/tmp/hello.txt", "Hello World")
+content = fread("/tmp/hello.txt")
 
 # Command execution
-cmdx('ls', '-la')
+cmdx("ls", "-la")
 
 # Debug output
-dd('debug message')
+dd("debug message")
 ```
 
 ## API Reference

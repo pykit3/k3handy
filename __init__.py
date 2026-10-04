@@ -6,47 +6,35 @@ from __future__ import annotations
 
 import logging
 import os
-import sys
-from typing import Sequence
-
+from collections.abc import Sequence
 from importlib.metadata import version
 
 __version__ = version("k3handy")
 
-from . import path
-
-from k3fs import fread
-from k3fs import fwrite
-from k3fs import ls_dirs
-from k3fs import ls_files
-from k3fs import makedirs
-from k3fs import remove
-from k3proc import command
-from k3proc import CalledProcessError
-from k3proc import TimeoutExpired
+from k3fs import fread, fwrite, ls_dirs, ls_files, makedirs, remove
+from k3proc import CalledProcessError, TimeoutExpired, command
 from k3str import to_bytes
 
-from .path import pabs
-from .path import pjoin
-from .path import prebase
+from . import path
+from .cmdutil import (
+    CMD_NONE_ONELINE,
+    CMD_RAISE_ONELINE,
+    CMD_RAISE_STDOUT,
+    CmdFlag,
+    cmd0,
+    cmdf,
+    cmdout,
+    cmdpass,
+    cmdtty,
+    cmdx,
+    dd,
+    ddstack,
+    parse_flag,
+)
+from .path import pabs, pjoin, prebase
 
-from .cmdutil import CmdFlag
-from .cmdutil import CMD_RAISE_STDOUT
-from .cmdutil import CMD_RAISE_ONELINE
-from .cmdutil import CMD_NONE_ONELINE
-from .cmdutil import cmd0
-from .cmdutil import cmdf
-from .cmdutil import cmdout
-from .cmdutil import cmdpass
-from .cmdutil import cmdtty
-from .cmdutil import cmdx
-from .cmdutil import parse_flag
-
-from .cmdutil import dd
-from .cmdutil import ddstack
-
-
-__all__ = [
+# Grouped by source module, not sorted.
+__all__ = [  # noqa: RUF022
     # from k3fs
     "fread",
     "fwrite",
@@ -86,9 +74,7 @@ __all__ = [
 logger = logging.getLogger(__name__)
 
 #  Since 3.8 there is a stacklevel argument
-ddstack_kwarg: dict[str, int] = {}
-if sys.version_info.major == 3 and sys.version_info.minor >= 8:
-    ddstack_kwarg = {"stacklevel": 2}
+ddstack_kwarg: dict[str, int] = {"stacklevel": 2}
 
 
 def display(
