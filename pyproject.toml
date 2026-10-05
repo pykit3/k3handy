@@ -28,7 +28,6 @@ dependencies = [
     "k3fs",
     "k3proc",
     "k3str",
-    "k3ut",
 ]
 
 [project.urls]
@@ -40,6 +39,7 @@ dev = [
     "pytest>=7.0",
     "ruff",
     "coverage",
+    "k3ut",
 ]
 publish = [
     "build",
