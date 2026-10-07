@@ -5,7 +5,7 @@ import logging
 import warnings
 from collections.abc import Sequence
 from enum import Enum
-from typing import Any, Union
+from typing import Any
 
 from k3proc import command
 
@@ -37,8 +37,8 @@ CMD_RAISE_STDOUT: list[str] = [CmdFlag.RAISE, CmdFlag.STDOUT]
 CMD_RAISE_ONELINE: list[str] = [CmdFlag.RAISE, CmdFlag.ONELINE]
 CMD_NONE_ONELINE: list[str] = [CmdFlag.NONE, CmdFlag.ONELINE]
 
-# Type alias for flag parameters  (using Union for Python 3.9 compatibility)
-CmdFlagType = Union[str, CmdFlag, Sequence[Union[str, CmdFlag]]]
+# Type alias for flag parameters
+CmdFlagType = str | CmdFlag | Sequence[str | CmdFlag]
 
 #  Since 3.8 there is a stacklevel argument
 ddstack_kwarg: dict[str, Any] = {"stacklevel": 2}
