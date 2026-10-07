@@ -64,7 +64,7 @@ def prebase(base: str | None, *pseg: str | None) -> str | None:
         *pseg: segments to append to ``base``.
 
     Returns:
-        str: the path joined
+        the path joined
     """
 
     for p in pseg:

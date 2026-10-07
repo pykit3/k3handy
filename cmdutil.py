@@ -168,7 +168,7 @@ def cmd0(cmd: str | Sequence[str], *arguments: str, **options: Any) -> str:
     Alias to k3proc.command() with ``check=True``
 
     Returns:
-        str: first line of stdout.
+        first line of stdout.
     """
     dd("cmd0:", cmd, arguments, options)
     _, out, _ = cmdx(cmd, *arguments, **options)
@@ -183,7 +183,7 @@ def cmdout(cmd: str | Sequence[str], *arguments: str, **options: Any) -> list[st
     Alias to k3proc.command() with ``check=True``.
 
     Returns:
-        list: stdout in lines of str.
+        stdout in lines of str.
     """
 
     dd("cmdout:", cmd, arguments, options)
