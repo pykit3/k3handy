@@ -59,7 +59,6 @@ def prebase(base: str | None, *pseg: str | None) -> str | None:
     '/b'
 
     Args:
-
         base: base path, aka the left part.
 
         *pseg: segments to append to ``base``.
