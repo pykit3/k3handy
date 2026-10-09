@@ -294,6 +294,12 @@ def expand_flag(flag: str | CmdFlag | Sequence[str | CmdFlag]) -> tuple[str, ...
     }
 
     if isinstance(flag, str):
+        # A full name such as 'raise' or '-raise' is one flag, not letters
+        name = flag.removeprefix("-")
+        full_names = {f.value for f in CmdFlag}
+        if name in full_names:
+            return (flag,)
+
         res: list[str] = []
         buf = ""
 

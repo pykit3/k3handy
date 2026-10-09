@@ -54,6 +54,8 @@ class TestHandyCmd(unittest.TestCase):
         # Test cases using full flag names (no warnings expected)
         full_name_cases = [
             ([""], ()),
+            (["raise"], ("raise",)),
+            (["raise", "oneline", "-raise"], ("oneline",)),
             ([("raise", "oneline", "-raise")], ("oneline",)),
             ([["raise", "oneline"]], ("raise", "oneline")),
         ]
@@ -69,9 +71,11 @@ class TestHandyCmd(unittest.TestCase):
                 k3handy.parse_flag("q")
 
         # Test full name flags (no warnings)
-        for flags, want in full_name_cases:
-            got = k3handy.parse_flag(*flags)
-            self.assertEqual(want, got)
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", DeprecationWarning)
+            for flags, want in full_name_cases:
+                got = k3handy.parse_flag(*flags)
+                self.assertEqual(want, got)
 
     def test_parse_flag_with_enum(self):
         # Test CmdFlag enum
