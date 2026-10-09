@@ -7,9 +7,6 @@ from __future__ import annotations
 import logging
 import os
 from collections.abc import Sequence
-from importlib.metadata import version
-
-__version__ = version("k3handy")
 
 from k3fs import fread, fwrite, ls_dirs, ls_files, makedirs, remove
 from k3proc import CalledProcessError, TimeoutExpired, command
@@ -110,3 +107,14 @@ def display(
 
     if stderr is not None:
         display(2, stderr)
+
+
+def __getattr__(name: str) -> str:
+    # importlib.metadata takes about 20 ms to import, so it is loaded only
+    # when __version__ is read
+    if name != "__version__":
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    from importlib.metadata import version
+
+    return version("k3handy")
