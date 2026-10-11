@@ -40,6 +40,18 @@ CMD_NONE_ONELINE: list[str] = [CmdFlag.NONE, CmdFlag.ONELINE]
 # Type alias for flag parameters
 CmdFlagType = str | CmdFlag | Sequence[str | CmdFlag]
 
+_FLAG_NAMES = {f.value for f in CmdFlag}
+
+# Deprecated single-letter aliases of the flag names
+_FLAG_ALIASES: dict[str, str] = {
+    "x": "raise",
+    "t": "tty",
+    "n": "none",
+    "p": "pass",
+    "o": "stdout",
+    "0": "oneline",
+}
+
 #  Since 3.8 there is a stacklevel argument
 ddstack_kwarg: dict[str, Any] = {"stacklevel": 2}
 
@@ -284,20 +296,10 @@ def expand_flag(flag: str | CmdFlag | Sequence[str | CmdFlag]) -> tuple[str, ...
     if isinstance(flag, CmdFlag):
         return (flag.value,)
 
-    mp: dict[str, str] = {
-        "x": "raise",
-        "t": "tty",
-        "n": "none",
-        "p": "pass",
-        "o": "stdout",
-        "0": "oneline",
-    }
-
     if isinstance(flag, str):
         # A full name such as 'raise' or '-raise' is one flag, not letters
         name = flag.removeprefix("-")
-        full_names = {f.value for f in CmdFlag}
-        if name in full_names:
+        if name in _FLAG_NAMES:
             return (flag,)
 
         res: list[str] = []
@@ -308,7 +310,7 @@ def expand_flag(flag: str | CmdFlag | Sequence[str | CmdFlag]) -> tuple[str, ...
                 buf += c
                 continue
             else:
-                full_name = mp[c]
+                full_name = _FLAG_ALIASES[c]
                 warnings.warn(
                     f"Single-letter flag '{c}' is deprecated, use '{full_name}' instead",
                     DeprecationWarning,
