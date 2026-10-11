@@ -1,3 +1,4 @@
+import os
 import unittest
 
 import k3ut
@@ -63,3 +64,17 @@ class TestHandyDisplay(unittest.TestCase):
             )
 
             self.assertEqual(want, (out, err))
+
+
+class TestHandyPath(unittest.TestCase):
+    def test_prebase_without_segments(self):
+        cwd = os.getcwd()
+        for base, want in (
+            ("/a", "/a"),
+            ("/a/../b", "/b"),
+            ("a", os.path.join(cwd, "a")),
+            ("", cwd),
+            (None, None),
+        ):
+            got = k3handy.prebase(base)
+            self.assertEqual(want, got, repr(base))

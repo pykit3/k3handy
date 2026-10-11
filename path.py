@@ -79,4 +79,7 @@ def prebase(base: str | None, *pseg: str | None) -> str | None:
 
         base = pabs(base, p)
 
-    return base
+    if base is None:
+        return None
+
+    return pabs(base)
