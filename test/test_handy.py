@@ -88,3 +88,15 @@ class TestHandyPath(unittest.TestCase):
         ):
             got = k3handy.prebase(None, *pseg)
             self.assertEqual(want, got, repr(pseg))
+
+    def test_prebase_relative_base(self):
+        cwd = os.getcwd()
+        for base, pseg, want in (
+            ("a", ("b", "c"), os.path.join(cwd, "a", "b", "c")),
+            ("a", ("b/../c",), os.path.join(cwd, "a", "c")),
+            ("a", ("/b", "c"), "/b/c"),
+            ("", ("b",), os.path.join(cwd, "b")),
+            ("a", ("b", None), None),
+        ):
+            got = k3handy.prebase(base, *pseg)
+            self.assertEqual(want, got, repr((base, pseg)))
