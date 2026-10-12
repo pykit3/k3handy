@@ -19,9 +19,12 @@ class CmdFlag(str, Enum):
     Can be used individually or combined in lists.
 
     Examples:
-        >>> cmdf("ls", flag=CmdFlag.RAISE)
-        >>> cmdf("git", "status", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
+        >>> cmdf("echo", "hi", flag=CmdFlag.RAISE)
+        (0, ['hi'], [])
+        >>> cmdf("echo", "hi", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
+        ['hi']
         >>> cmdf("echo", "hi", flag=CMD_RAISE_ONELINE)
+        'hi'
     """
 
     RAISE = "raise"  # Raise CalledProcessError if return code != 0
@@ -133,14 +136,19 @@ def cmdf(
     Examples:
         Using enum constants (recommended):
 
-        >>> cmdf("ls", "-la", flag=CmdFlag.RAISE)
-        >>> cmdf("git", "status", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
-        >>> branch = cmdf("git", "branch", "--show-current", flag=CMD_RAISE_ONELINE)
+        >>> cmdf("echo", "hi", flag=CmdFlag.RAISE)
+        (0, ['hi'], [])
+        >>> cmdf("echo", "hi", flag=[CmdFlag.RAISE, CmdFlag.STDOUT])
+        ['hi']
+        >>> cmdf("echo", "hi", flag=CMD_RAISE_ONELINE)
+        'hi'
 
         String forms (also supported):
 
-        >>> cmdf("ls", flag="raise")
-        >>> cmdf("ls", flag=["raise", "stdout"])
+        >>> cmdf("echo", "hi", flag="raise")
+        (0, ['hi'], [])
+        >>> cmdf("echo", "hi", flag=["raise", "stdout"])
+        ['hi']
     """
     dd("cmdf:", cmd, arguments, options)
     dd("flag:", flag)
