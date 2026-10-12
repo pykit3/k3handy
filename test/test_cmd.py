@@ -374,3 +374,29 @@ k3handy.cmdpass(
 
         self.assertEqual(0, returncode)
         self.assertEqual(["123"], out)
+
+    def test_bytes_output(self):
+        # With text=False the lines stay bytes, so output that is not UTF-8 is kept.
+        write_bytes = r'import sys; sys.stdout.buffer.write(b"\xff\nb\n"); sys.stderr.buffer.write(b"\xfe")'
+
+        got = k3handy.cmdx("python", "-c", write_bytes, text=False)
+        self.assertEqual((0, [b"\xff", b"b"], [b"\xfe"]), got)
+
+        got = k3handy.cmdf("python", "-c", write_bytes, text=False)
+        self.assertEqual((0, [b"\xff", b"b"], [b"\xfe"]), got)
+
+        got = k3handy.cmdf("python", "-c", write_bytes, flag=["stdout"], text=False)
+        self.assertEqual([b"\xff", b"b"], got)
+
+        got = k3handy.cmdf("python", "-c", write_bytes, flag=["oneline"], text=False)
+        self.assertEqual(b"\xff", got)
+
+        got = k3handy.cmd0("python", "-c", write_bytes, text=False)
+        self.assertEqual(b"\xff", got)
+
+        #  no output
+        got = k3handy.cmdf("python", "-c", "", flag=["oneline"], text=False)
+        self.assertEqual(b"", got)
+
+        got = k3handy.cmd0("python", "-c", "", text=False)
+        self.assertEqual(b"", got)

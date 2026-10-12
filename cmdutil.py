@@ -43,6 +43,9 @@ CMD_NONE_ONELINE: list[str] = [CmdFlag.NONE, CmdFlag.ONELINE]
 # Type alias for flag parameters
 CmdFlagType = str | CmdFlag | Sequence[str | CmdFlag]
 
+# Output lines, which are bytes when text=False is passed to k3proc.command()
+CmdLines = list[str] | list[bytes]
+
 _FLAG_NAMES = {f.value for f in CmdFlag}
 
 # Deprecated single-letter aliases of the flag names
@@ -89,7 +92,7 @@ def cmdf(
     *arguments: str,
     flag: CmdFlagType = "",
     **options: Any,
-) -> None | list[str] | str | tuple[int, list[str], list[str]]:
+) -> None | CmdLines | str | bytes | tuple[int, CmdLines, CmdLines]:
     """
     Alias to k3proc.command(). Behavior is specified with ``flag``
 
@@ -133,6 +136,8 @@ def cmdf(
             - With NONE: None if error, otherwise normal return
             - Default: tuple[int, list[str], list[str]] (code, stdout, stderr)
 
+        With ``text=False`` in options, each line is bytes and is not decoded.
+
     Examples:
         Using enum constants (recommended):
 
@@ -167,8 +172,8 @@ def cmdf(
     if code != 0 and "none" in flag:
         return None
 
-    out_lines = out.splitlines() if isinstance(out, str) else out.decode().splitlines()
-    err_lines = err.splitlines() if isinstance(err, str) else err.decode().splitlines()
+    out_lines = out.splitlines()
+    err_lines = err.splitlines()
 
     if "stdout" in flag:
         dd("cmdf: out:", out_lines)
@@ -178,12 +183,14 @@ def cmdf(
         dd("cmdf: out:", out_lines)
         if len(out_lines) > 0:
             return out_lines[0]
+        if isinstance(out, bytes):
+            return b""
         return ""
 
     return code, out_lines, err_lines
 
 
-def cmd0(cmd: str | Sequence[str], *arguments: str, **options: Any) -> str:
+def cmd0(cmd: str | Sequence[str], *arguments: str, **options: Any) -> str | bytes:
     """
     Alias to k3proc.command() with ``check=True``
 
@@ -191,19 +198,18 @@ def cmd0(cmd: str | Sequence[str], *arguments: str, **options: Any) -> str:
         first line of stdout.
     """
     dd("cmd0:", cmd, arguments, options)
-    _, out, _ = cmdx(cmd, *arguments, **options)
-    dd("cmd0: out:", out)
-    if len(out) > 0:
-        return out[0]
-    return ""
+    # The lines of cmdx() cannot tell b"" from "" when there is no output.
+    line = cmdf(cmd, *arguments, flag=CMD_RAISE_ONELINE, **options)
+    assert isinstance(line, (str, bytes))
+    return line
 
 
-def cmdout(cmd: str | Sequence[str], *arguments: str, **options: Any) -> list[str]:
+def cmdout(cmd: str | Sequence[str], *arguments: str, **options: Any) -> CmdLines:
     """
     Alias to k3proc.command() with ``check=True``.
 
     Returns:
-        stdout in lines of str.
+        stdout in lines of str, or of bytes with ``text=False``.
     """
 
     dd("cmdout:", cmd, arguments, options)
@@ -212,30 +218,32 @@ def cmdout(cmd: str | Sequence[str], *arguments: str, **options: Any) -> list[st
     return out
 
 
-def cmdx(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, list[str], list[str]]:
+def cmdx(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, CmdLines, CmdLines]:
     """
     Alias to k3proc.command() with ``check=True``.
 
     Returns:
-        (int, list, list): exit code, stdout and stderr in lines of str.
+        (int, list, list): exit code, stdout and stderr in lines of str,
+            or of bytes with ``text=False``.
     """
     dd("cmdx:", cmd, arguments, options)
     ddstack()
 
     options["check"] = True
     code, out, err = command(cmd, *arguments, **options)
-    out_lines = out.splitlines() if isinstance(out, str) else out.decode().splitlines()
-    err_lines = err.splitlines() if isinstance(err, str) else err.decode().splitlines()
+    out_lines = out.splitlines()
+    err_lines = err.splitlines()
     return code, out_lines, err_lines
 
 
-def cmdtty(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, list[str], list[str]]:
+def cmdtty(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, CmdLines, CmdLines]:
     """
     Alias to k3proc.command() with ``check=True`` ``tty=True``.
     As if the command is run in a tty.
 
     Returns:
-        (int, list, list): exit code, stdout and stderr in lines of str.
+        (int, list, list): exit code, stdout and stderr in lines of str,
+            or of bytes with ``text=False``.
     """
 
     dd("cmdtty:", cmd, arguments, options)
@@ -243,7 +251,7 @@ def cmdtty(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[i
     return cmdx(cmd, *arguments, **options)
 
 
-def cmdpass(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, list[str], list[str]]:
+def cmdpass(cmd: str | Sequence[str], *arguments: str, **options: Any) -> tuple[int, CmdLines, CmdLines]:
     """
     Alias to k3proc.command() with ``check=True`` ``capture=False``.
     It just passes stdout and stderr to calling process.
